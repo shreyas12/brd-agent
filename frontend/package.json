@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
-    "prebuild": "rm -rf .next",
     "build": "next build",
     "start": "next start -p ${PORT:-3000}",
     "lint": "next lint"

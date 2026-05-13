@@ -193,7 +193,7 @@ export default function Home() {
     <PasswordGate>
       <header className="topbar px-6 md:px-10">
         <div className="h-full max-w-[1200px] mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
+          <Link href="/home" className="flex items-center gap-3 group">
             <div className="w-9 h-9 rounded-xl bg-gradient-cta flex items-center justify-center text-white font-black text-base shadow-cta group-hover:scale-105 transition">
               B
             </div>

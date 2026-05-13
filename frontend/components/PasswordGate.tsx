@@ -92,7 +92,7 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
 
         <div className="mt-5 pt-4 border-t border-line text-center">
           <Link
-            href="/"
+            href="/home"
             className="text-[0.78rem] text-muted hover:text-accent transition"
           >
             ← back to overview
