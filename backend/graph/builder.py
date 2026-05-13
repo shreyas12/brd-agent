@@ -19,6 +19,7 @@ CHECKPOINT_DB = os.environ.get(
     "CHECKPOINT_DB_PATH",
     str(Path(__file__).resolve().parent.parent / "checkpoints.db"),
 )
+Path(CHECKPOINT_DB).parent.mkdir(parents=True, exist_ok=True)
 
 
 def _build_uncompiled() -> StateGraph:
