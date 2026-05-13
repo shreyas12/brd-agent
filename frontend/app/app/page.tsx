@@ -10,6 +10,7 @@ import SessionSidebar from "@/components/SessionSidebar";
 import PasswordGate from "@/components/PasswordGate";
 import {
   createSession,
+  finalizeSession,
   getState,
   submitEmphasis,
   submitFeedback,
@@ -27,6 +28,21 @@ const STATUS_LABEL: Record<string, string> = {
   DRAFT_2: "Drafting v2",
   FEEDBACK_2: "Awaiting feedback · v2",
   FINAL: "Final",
+};
+
+const NODE_LABEL: Record<string, string> = {
+  input_handler: "Reading input…",
+  chunker: "Chunking the document…",
+  embedder: "Generating embeddings…",
+  emphasis_collector: "Collecting emphasis…",
+  template_builder: "Mutating BRD template…",
+  retriever: "Retrieving relevant chunks…",
+  drafter: "Drafting sections…",
+  renderer: "Rendering markdown…",
+  evaluator: "Evaluating draft quality…",
+  feedback_collector: "Collecting feedback…",
+  critic: "Analyzing your feedback…",
+  finalizer: "Finalizing…",
 };
 
 export default function Home() {
@@ -150,7 +166,28 @@ export default function Home() {
     }
   }
 
+  async function handleFinalize() {
+    if (!sessionId) return;
+    setError(null);
+    setBusy(true);
+    startPolling();
+    try {
+      const snap = await finalizeSession(sessionId);
+      setSnapshot(snap);
+      setHistoryRefresh((k) => k + 1);
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      stopPolling();
+      setBusy(false);
+    }
+  }
+
   const statusLabel = snapshot?.status ? STATUS_LABEL[snapshot.status] : null;
+  const activeLabel =
+    busy && snapshot?.current_node
+      ? NODE_LABEL[snapshot.current_node] || snapshot.current_node
+      : null;
 
   return (
     <PasswordGate>
@@ -166,7 +203,14 @@ export default function Home() {
             </div>
           </Link>
           <div className="flex items-center gap-3">
-            {statusLabel && <span className="chip chip-accent">{statusLabel}</span>}
+            {activeLabel ? (
+              <span className="chip chip-accent flex items-center gap-2">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+                {activeLabel}
+              </span>
+            ) : (
+              statusLabel && <span className="chip chip-accent">{statusLabel}</span>
+            )}
             {sessionId && (
               <span className="chip font-mono">session {sessionId.slice(0, 8)}</span>
             )}
@@ -204,6 +248,7 @@ export default function Home() {
               onUpload={handleUpload}
               onEmphasis={handleEmphasis}
               onFeedback={handleFeedback}
+              onFinalize={handleFinalize}
               busy={busy}
               uploadError={!snapshot ? error : null}
             />

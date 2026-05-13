@@ -23,3 +23,9 @@ def route_after_evaluator(state: dict) -> str:
     we never skip the feedback HITL based on a score, even a high one.
     """
     return "feedback_collector"
+
+
+def route_after_feedback_collector(state: dict) -> str:
+    if state.get("finalize_requested"):
+        return "finalizer"
+    return "critic"

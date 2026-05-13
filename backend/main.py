@@ -315,6 +315,22 @@ def submit_feedback(session_id: str, req: FeedbackReq):
     return snap
 
 
+@app.post("/api/sessions/{session_id}/finalize")
+def finalize_now(session_id: str):
+    config = {"configurable": {"thread_id": session_id}}
+    snap_pre = GRAPH.get_state(config)
+    attempt = snap_pre.values.get("attempt_number", 1)
+    GRAPH.update_state(config, {
+        "finalize_requested": True,
+        f"feedback_{attempt}_raw": "(user finalized without further changes)",
+    })
+    GRAPH.invoke(None, config)
+    snap = _snapshot(session_id)
+    if snap["status"] == "FINAL":
+        snap["awaiting"] = None
+    return snap
+
+
 @app.get("/api/sessions/{session_id}/state")
 def get_state(session_id: str):
     return _snapshot(session_id)

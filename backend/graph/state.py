@@ -71,3 +71,7 @@ class AgentState(TypedDict):
     # Trace (cross-cutting)
     trace_log: list[TraceEntry]
     current_node: Optional[str]
+
+    # Early-exit signal: set by the /finalize endpoint when the user accepts
+    # the v1 draft and skips the second drafting round.
+    finalize_requested: NotRequired[bool]

@@ -138,6 +138,16 @@ export async function submitFeedback(
   );
 }
 
+export async function finalizeSession(
+  sessionId: string,
+): Promise<SessionSnapshot> {
+  return json(
+    await fetch(`${API_BASE}/api/sessions/${sessionId}/finalize`, {
+      method: "POST",
+    }),
+  );
+}
+
 export async function getState(sessionId: string): Promise<SessionSnapshot> {
   return json(await fetch(`${API_BASE}/api/sessions/${sessionId}/state`));
 }

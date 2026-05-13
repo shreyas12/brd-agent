@@ -10,7 +10,7 @@ from graph.nodes import (
     template_builder, retriever, drafter, renderer, evaluator,
     feedback_collector, critic, finalizer,
 )
-from graph.routing import route_after_critic, route_after_evaluator
+from graph.routing import route_after_critic, route_after_evaluator, route_after_feedback_collector
 
 # CHECKPOINT_DB_PATH can be set to a path on a mounted volume in prod
 # (e.g. /data/checkpoints.db on Railway). Defaults to backend/checkpoints.db
@@ -47,7 +47,15 @@ def _build_uncompiled() -> StateGraph:
     g.add_edge("retriever", "drafter")
     g.add_edge("drafter", "renderer")
     g.add_edge("renderer", "evaluator")
-    g.add_edge("feedback_collector", "critic")
+
+    g.add_conditional_edges(
+        "feedback_collector",
+        route_after_feedback_collector,
+        {
+            "critic": "critic",
+            "finalizer": "finalizer",
+        },
+    )
 
     g.add_conditional_edges(
         "evaluator",

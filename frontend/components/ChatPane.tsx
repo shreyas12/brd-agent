@@ -10,6 +10,7 @@ export default function ChatPane({
   onUpload,
   onEmphasis,
   onFeedback,
+  onFinalize,
   busy,
   uploadError,
 }: {
@@ -17,6 +18,7 @@ export default function ChatPane({
   onUpload: (text: string, file: File | null) => void;
   onEmphasis: (emphasis: Record<string, Emphasis>) => void;
   onFeedback: (text: string) => void;
+  onFinalize: () => void;
   busy: boolean;
   uploadError?: string | null;
 }) {
@@ -147,7 +149,18 @@ export default function ChatPane({
             onChange={(e) => setFeedback(e.target.value)}
             disabled={busy}
           />
-          <div className="mt-4 flex justify-end">
+          <div className="mt-4 flex justify-end gap-2 flex-wrap">
+            {status === "FEEDBACK_1" && (
+              <button
+                type="button"
+                className="btn-ghost"
+                disabled={busy}
+                onClick={onFinalize}
+                title="Skip the second drafting round and lock in v1 as the final BRD"
+              >
+                {busy ? "Working…" : "Looks good, finalize →"}
+              </button>
+            )}
             <button
               type="button"
               className="btn-cta"
